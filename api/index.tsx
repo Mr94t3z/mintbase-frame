@@ -39,7 +39,7 @@ export const mintArgs = (accountId: string): NearContractCall<MintArgsResponse> 
   });
 };
 
-const imageUrl = process.env.NEXT_PUBLIC_MEDIA_URL || '';
+// const imageUrl = process.env.NEXT_PUBLIC_MEDIA_URL || '';
 
 app.frame('/', async (c) => {
   const { buttonValue } = c;
@@ -52,7 +52,8 @@ app.frame('/', async (c) => {
 
       return c.res({
         imageAspectRatio: '1:1',
-        image: imageUrl,
+        // image: imageUrl,
+        image: 'https://24njbleuvrkggjnr6s3pk473n4jc3buhmy3gnrtfms7jueolq6gq.arweave.net/1xqQrJSsVGMlsfS29XP7bxIthodmNmbGZWS-mhHLh40',
         intents: [
           <Button action='/'>Decline</Button>,
           <Button.Link href={`https://testnet.wallet.mintbase.xyz/sign-transaction?transactions_data=[${encodeURIComponent(txArgs)}]`}>Approve ⌁</Button.Link>,
@@ -101,7 +102,8 @@ app.frame('/', async (c) => {
 
   return c.res({
     imageAspectRatio: '1:1',
-    image: imageUrl,
+    // image: imageUrl,
+    image: 'https://24njbleuvrkggjnr6s3pk473n4jc3buhmy3gnrtfms7jueolq6gq.arweave.net/1xqQrJSsVGMlsfS29XP7bxIthodmNmbGZWS-mhHLh40',
     intents: [
       <Button value='mint'>Mint NFT ⚡︎</Button>,
     ],
