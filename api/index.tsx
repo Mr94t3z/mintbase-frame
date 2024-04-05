@@ -1,6 +1,7 @@
 import { Button, Frog } from 'frog';
 import { handle } from 'frog/vercel';
-import { CLIENT_MINT_ARGS, PROXY_CONTRACT, WALLET_DEEP_LINK} from './constants.js';
+import { CLIENT_MINT_ARGS, MEDIA_URL, NFT_CONTRACT, PROXY_CONTRACT, REFERENCE_URL, WALLET_DEEP_LINK} from './constants.js';
+import { mint, MintArgsResponse, NearContractCall } from '@mintbase-js/sdk';
 import dotenv from 'dotenv';
 // Uncomment this packages to tested on local server
 // import { devtools } from 'frog/dev';
@@ -27,6 +28,18 @@ export const app = new Frog({
   },
 });
 
+
+export const mintArgs = (accountId: string): NearContractCall<MintArgsResponse> => {
+  return mint({
+      contractAddress: NFT_CONTRACT,
+      ownerId: accountId,
+      metadata: {
+          media: MEDIA_URL,
+          reference: REFERENCE_URL
+      }
+  })
+}
+
 // const imageUrl = process.env.NEXT_PUBLIC_MEDIA_URL || '';
 
 app.frame('/', async (c) => {
@@ -34,18 +47,27 @@ app.frame('/', async (c) => {
 
   if (buttonValue === 'mint') {
     try {
+      // Retrieve mint parameters using mintArgs function
+      const mintParams = await mintArgs("");
+
+      // Create an action object for the mint, specifying type and parameters
+      const action = { type: "FunctionCall", params: mintParams };
+
+      // Create transaction arguments in JSON format with receiverId and actions array
       const txArgs = JSON.stringify({
         receiverId: PROXY_CONTRACT,
-        actions: [CLIENT_MINT_ARGS],
+        actions: [action],
+        // actions: [CLIENT_MINT_ARGS],
       });
-
+      
       return c.res({
         imageAspectRatio: '1:1',
         // image: imageUrl,
         image: 'https://arcezupqcsudumub5m24q4gsal4x5nrgwtcgm7crpth63wokerca.arweave.net/BERM0fAUqDoyges1yHDSAvl-tia0xGZ8UXzP7dnKJEQ',
         intents: [
           <Button action='/'>Decline</Button>,
-          <Button.Link href={`${WALLET_DEEP_LINK}[${encodeURIComponent(txArgs)}]&isDrop=true`}>Approve ⌁</Button.Link>
+          <Button.Link href={`${WALLET_DEEP_LINK}[${encodeURIComponent(txArgs)}]`}>Approve ⌁</Button.Link>
+          // <Button.Link href={`${WALLET_DEEP_LINK}[${encodeURIComponent(txArgs)}]&isDrop=true`}>Approve ⌁</Button.Link>
         ],
       });
     } catch (error) {
