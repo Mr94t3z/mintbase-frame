@@ -3,8 +3,8 @@ import { handle } from 'frog/vercel';
 import { CLIENT_MINT_ARGS, PROXY_CONTRACT, WALLET_DEEP_LINK} from './constants.js';
 import dotenv from 'dotenv';
 // Uncomment this packages to tested on local server
-import { devtools } from 'frog/dev';
-import { serveStatic } from 'frog/serve-static';
+// import { devtools } from 'frog/dev';
+// import { serveStatic } from 'frog/serve-static';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -100,7 +100,7 @@ app.frame('/', async (c) => {
 });
 
 // Uncomment for local server testing
-devtools(app, { serveStatic });
+// devtools(app, { serveStatic });
 
 export const GET = handle(app);
 export const POST = handle(app);
