@@ -1,11 +1,10 @@
 import { Button, Frog } from 'frog';
 import { handle } from 'frog/vercel';
-import { MEDIA_URL, NFT_CONTRACT, REFERENCE_URL } from './constants.js';
-import { mint, MintArgsResponse, NearContractCall } from '@mintbase-js/sdk';
+import { CLIENT_MINT_ARGS, PROXY_CONTRACT, WALLET_DEEP_LINK} from './constants.js';
 import dotenv from 'dotenv';
 // Uncomment this packages to tested on local server
-// import { devtools } from 'frog/dev';
-// import { serveStatic } from 'frog/serve-static';
+import { devtools } from 'frog/dev';
+import { serveStatic } from 'frog/serve-static';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -28,17 +27,6 @@ export const app = new Frog({
   },
 });
 
-export const mintArgs = (accountId: string): NearContractCall<MintArgsResponse> => {
-  return mint({
-      contractAddress: NFT_CONTRACT,
-      ownerId: accountId,
-      metadata: {
-          media: MEDIA_URL,
-          reference: REFERENCE_URL
-      }
-  });
-};
-
 // const imageUrl = process.env.NEXT_PUBLIC_MEDIA_URL || '';
 
 app.frame('/', async (c) => {
@@ -46,17 +34,18 @@ app.frame('/', async (c) => {
 
   if (buttonValue === 'mint') {
     try {
-      const mintParams = await mintArgs("");
-      const action = { type: "FunctionCall", params: mintParams };
-      const txArgs = JSON.stringify({ receiverId: "1.minsta.mintbus.near", actions: [action] });
+      const txArgs = JSON.stringify({
+        receiverId: PROXY_CONTRACT,
+        actions: [CLIENT_MINT_ARGS],
+      });
 
       return c.res({
         imageAspectRatio: '1:1',
         // image: imageUrl,
-        image: 'https://24njbleuvrkggjnr6s3pk473n4jc3buhmy3gnrtfms7jueolq6gq.arweave.net/1xqQrJSsVGMlsfS29XP7bxIthodmNmbGZWS-mhHLh40',
+        image: 'https://arcezupqcsudumub5m24q4gsal4x5nrgwtcgm7crpth63wokerca.arweave.net/BERM0fAUqDoyges1yHDSAvl-tia0xGZ8UXzP7dnKJEQ',
         intents: [
           <Button action='/'>Decline</Button>,
-          <Button.Link href={`https://testnet.wallet.mintbase.xyz/sign-transaction?transactions_data=[${encodeURIComponent(txArgs)}]`}>Approve ⌁</Button.Link>,
+          <Button.Link href={`${WALLET_DEEP_LINK}[${encodeURIComponent(txArgs)}]&isDrop=true`}>Approve ⌁</Button.Link>
         ],
       });
     } catch (error) {
@@ -103,7 +92,7 @@ app.frame('/', async (c) => {
   return c.res({
     imageAspectRatio: '1:1',
     // image: imageUrl,
-    image: 'https://24njbleuvrkggjnr6s3pk473n4jc3buhmy3gnrtfms7jueolq6gq.arweave.net/1xqQrJSsVGMlsfS29XP7bxIthodmNmbGZWS-mhHLh40',
+    image: 'https://arcezupqcsudumub5m24q4gsal4x5nrgwtcgm7crpth63wokerca.arweave.net/BERM0fAUqDoyges1yHDSAvl-tia0xGZ8UXzP7dnKJEQ',
     intents: [
       <Button value='mint'>Mint NFT ⚡︎</Button>,
     ],
@@ -111,7 +100,7 @@ app.frame('/', async (c) => {
 });
 
 // Uncomment for local server testing
-// devtools(app, { serveStatic });
+devtools(app, { serveStatic });
 
 export const GET = handle(app);
 export const POST = handle(app);
